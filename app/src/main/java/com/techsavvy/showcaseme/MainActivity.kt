@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +32,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.techsavvy.showcaseme.ui.nav.AppNavHost
 import com.techsavvy.showcaseme.ui.theme.ShowCaseMeTheme
+import com.techsavvy.showcaseme.widgets.utils.LocalSmartToast
+import com.techsavvy.showcaseme.widgets.utils.SmartToast
+import com.techsavvy.showcaseme.widgets.utils.SmartToastState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -67,7 +71,14 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ShowCaseMeTheme {
-                AppNavHost()
+                val toastState = remember { SmartToastState() }
+
+                CompositionLocalProvider(LocalSmartToast provides toastState) {
+                        // Your NavHost or main UI
+                    AppNavHost()
+                    SmartToast(toastState)
+
+                }
             }
         }
     }

@@ -8,30 +8,42 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.techsavvy.showcaseme.ui.SplashScreen
+import com.techsavvy.showcaseme.ui.splash.SplashScreen
 import com.techsavvy.showcaseme.ui.auth.LoginScreen
+import com.techsavvy.showcaseme.ui.auth.RegisterScreen
 import com.techsavvy.showcaseme.ui.home.HomeScreen
+import com.techsavvy.showcaseme.ui.qr.QRScreen
+import com.techsavvy.showcaseme.widgets.TopBar
 
 @Composable
 fun AppNavHost() {
 
     var navController = rememberNavController()
 
-    Scaffold {
-
+    Scaffold(
+        topBar ={
+            TopBar(navController)
+        }
+    ) {
         NavHost(
             navController,
             startDestination = Screens.Splash.route,
             modifier = Modifier.padding(it)
         ) {
             composable(Screens.Splash.route) {
-                SplashScreen(navController)
+                SplashScreen(navController,hiltViewModel())
             }
             composable(Screens.Login.route) {
                 LoginScreen(navController, hiltViewModel())
             }
+            composable(Screens.Register.route) {
+                RegisterScreen(navController,hiltViewModel())
+            }
             composable(Screens.Home.route){
                 HomeScreen(navController,hiltViewModel())
+            }
+            composable(Screens.QRScreen.route){
+                QRScreen(navController)
             }
         }
     }

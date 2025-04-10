@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -18,9 +19,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,27 +76,60 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color.White, Color(0xFFCEE9FE)) // white to #CEE9FE
+                    colors = listOf(
+                        Color.White,
+                        Color(0xFFCEE9FE),
+                        Color(0xFFCEE9FE),
+                        Color(0xFFCEE9FE),
+                    ) // white to #CEE9FE
                 )
             )
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
+
+        Text("ShowCaseMe",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.align(Alignment.TopCenter)
+                .clip(RoundedCornerShape(15.dp))
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White,
+                            Color(0xFFCEE9FE),
+                            Color(0xFFCEE9FE),
+                        )
+                    )
+                )
+                .padding(10.dp)
+                ,
+            color = Color.DarkGray,
+            fontWeight = Bold
+        )
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(8.dp),
-            shape = MaterialTheme.shapes.large
+            shape = MaterialTheme.shapes.large,
         ) {
             Column(
                 modifier = Modifier
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color(0xFFD6ECFD),
+                                Color(0xFFE4EFF8),
+                                Color(0xFFDDEEFC),
+                                Color(0xFFE5EFF8)
+                            ) // white to #CEE9FE
+                        )
+                    )
                     .padding(24.dp)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("ShowCaseMe",
-                    style = MaterialTheme.typography.bodyMedium
-                    )
+
                 Text("Welcome Back 👋", style = MaterialTheme.typography.headlineSmall)
                 Text("Login to your account", fontSize = 14.sp, color = Color.Gray)
 

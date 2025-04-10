@@ -10,5 +10,7 @@ sealed class Screens(
     object Register : Screens("register","Register")
     object Home : Screens("home","Home")
     object QRScreen : Screens("qr","QR Code")
+    object QRShare : Screens("qrShare","QR Share")
+
     object Empty : Screens("","")
 }

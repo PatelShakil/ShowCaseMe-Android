@@ -12,8 +12,11 @@ import com.techsavvy.showcaseme.ui.splash.SplashScreen
 import com.techsavvy.showcaseme.ui.auth.LoginScreen
 import com.techsavvy.showcaseme.ui.auth.RegisterScreen
 import com.techsavvy.showcaseme.ui.home.HomeScreen
+import com.techsavvy.showcaseme.ui.qr.GenerateQRScreen
 import com.techsavvy.showcaseme.ui.qr.QRScreen
+import com.techsavvy.showcaseme.ui.qr.QRShareScreen
 import com.techsavvy.showcaseme.widgets.TopBar
+import com.techsavvy.showcaseme.widgets.utils.getViewModelInstance
 
 @Composable
 fun AppNavHost() {
@@ -43,7 +46,11 @@ fun AppNavHost() {
                 HomeScreen(navController,hiltViewModel())
             }
             composable(Screens.QRScreen.route){
-                QRScreen(navController)
+                GenerateQRScreen(navController,hiltViewModel())
+            }
+            composable(Screens.QRShare.route){
+                QRShareScreen(navController,navController.getViewModelInstance(navController.getBackStackEntry(
+                    Screens.QRScreen.route), Screens.QRScreen.route))
             }
         }
     }

@@ -5,6 +5,8 @@ import com.techsavvy.showcaseme.data.repo.api.auth.AuthImpl
 import com.techsavvy.showcaseme.data.repo.api.auth.AuthRepo
 import com.techsavvy.showcaseme.data.repo.log.FcmLog
 import com.techsavvy.showcaseme.data.repo.log.FcmLogImpl
+import com.techsavvy.showcaseme.data.repo.user.UserImpl
+import com.techsavvy.showcaseme.data.repo.user.UserRepo
 import com.techsavvy.showcaseme.network.ShowCaseMeHttpClient
 import com.techsavvy.showcaseme.utils.Helpers
 import com.techsavvy.showcaseme.utils.js.JSBridge
@@ -37,5 +39,8 @@ object AppModule {
     fun provideJSBridge(@ApplicationContext context: Context, helpers: Helpers): JSBridge {
         return JSBridge(helpers, context)
     }
+
+    @Provides
+    fun provideUserRepo(userRepo: UserImpl): UserRepo = userRepo
 
 }

@@ -21,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -96,37 +95,42 @@ fun WebViewScreen(navController: NavController, viewModel: HomeViewModel) {
                             private fun injectJavaScript(view: WebView?) {
                                 view!!.loadUrl(
                                     """
-                                javascript:(function() {
-        let attempts = 0;
-const maxAttempts = 20;
+        javascript:(function() {
+            let attempts = 0;
+            const maxAttempts = 20;
 
-const interval = setInterval(function() {
-    let logoutBtn = document.getElementById("logoutBtn");
-    let qrBtn = document.getElementById("qrBtn");
-   
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", function() {
-            Bridge.navigateToLogin();
-        });
-        qrBtn.classList.remove("hidden");
-        qrBtn.classList.add("flex");
-        qrBtn.addEventListener("click", function() {
-            Bridge.navigateToQRScreen();
-        });
-        clearInterval(interval);
-    } else {
-        attempts++;
-        if (attempts > maxAttempts) {
-            clearInterval(interval);
-        }
-    }
-}, 500);
+            const interval = setInterval(function() {
+                let logoutBtn = document.getElementById("logoutBtn");
+                let qrBtn = document.getElementById("qrBtn");
 
-    })()
-                                    """.trimIndent()
+                if (logoutBtn && qrBtn) {
+                    if (!logoutBtn.hasAttribute("listener-attached")) {
+                        logoutBtn.addEventListener("click", function() {
+                            Bridge.navigateToLogin();
+                        });
+                        logoutBtn.setAttribute("listener-attached", "true");
+                    }
+
+                    if (!qrBtn.hasAttribute("listener-attached")) {
+                        qrBtn.classList.remove("hidden");
+                        qrBtn.classList.add("flex");
+                        qrBtn.addEventListener("click", function() {
+                            Bridge.navigateToQRScreen();
+                        });
+                        qrBtn.setAttribute("listener-attached", "true");
+                    }
+
+                    clearInterval(interval);
+                } else {
+                    attempts++;
+                    if (attempts > maxAttempts) {
+                        clearInterval(interval);
+                    }
+                }
+            }, 500);
+        })()
+        """.trimIndent()
                                 )
-
-
                             }
                         }
 
@@ -202,12 +206,9 @@ const interval = setInterval(function() {
                         }
                     }
                 }
-
             }
 
             else -> {}
         }
     }
-
-
 }

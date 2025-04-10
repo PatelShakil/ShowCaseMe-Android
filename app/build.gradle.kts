@@ -82,4 +82,14 @@ dependencies {
     kapt(libs.androidx.hilt.compiler) // ✅ Needed only if using HiltViewModel manually or for WorkManager integration
 
 
+    //qrcode generator
+    implementation(libs.custom.qr.generator)
+
+
+    //color picker
+    implementation(libs.colorpicker.compose)
+
+
+
+
 }

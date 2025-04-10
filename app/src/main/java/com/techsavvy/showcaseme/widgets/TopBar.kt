@@ -32,6 +32,7 @@ fun TopBar(navController: NavController) {
             Screens.Register.route -> Screens.Register
             Screens.Home.route -> Screens.Home
             Screens.QRScreen.route -> Screens.QRScreen
+            Screens.QRShare.route -> Screens.QRShare
             else -> {
                 Screens.Empty
             }
@@ -39,25 +40,27 @@ fun TopBar(navController: NavController) {
     }
 
     Column(modifier = Modifier.fillMaxWidth()){
-        AnimatedVisibility(getRoute() != Screens.Home) {
-            TopAppBar(
-                navigationIcon = {
-                    if (getRoute() != Screens.Login) {
-                        IconButton(onClick = {
-                            navController.popBackStack()
-                        }) {
-                            Icon(Icons.Default.ArrowBack,null)
+        if(navController.currentBackStackEntryAsState().value?.destination?.route != Screens.Home.route) {
+            AnimatedVisibility(getRoute() != Screens.Home) {
+                TopAppBar(
+                    navigationIcon = {
+                        if (getRoute() != Screens.Login) {
+                            IconButton(onClick = {
+                                navController.popBackStack()
+                            }) {
+                                Icon(Icons.Default.ArrowBack, null)
+                            }
                         }
-                    }
-                },
-                title = {
-                    Text(getRoute().title)
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    titleContentColor = TopAppBarDefaults.topAppBarColors().titleContentColor
+                    },
+                    title = {
+                        Text(getRoute().title)
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        titleContentColor = TopAppBarDefaults.topAppBarColors().titleContentColor
+                    )
                 )
-            )
+            }
         }
     }
 

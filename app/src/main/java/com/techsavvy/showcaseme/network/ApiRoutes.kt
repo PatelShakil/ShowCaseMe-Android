@@ -7,8 +7,11 @@ object ApiRoutes {
 
     //Auth
     const val LOGIN = "${BASE_URL}auth/login"
-    const val REGISTER = "${BASE_URL}auth/register"
     const val JWT_VERIFY = "${BASE_URL}auth/jwt-verify"
+
+    //User
+    const val CHECK_USER_EXISTS = "${BASE_URL}user/check-user-exists"
+    const val REGISTER = "${BASE_URL}user/signup"
 
 
 }

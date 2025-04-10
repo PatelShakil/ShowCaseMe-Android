@@ -41,7 +41,7 @@ class HomeViewModel @Inject constructor(
             helper.remove("token")
             viewModelScope.launch(Dispatchers.Main) {
                 navController?.navigate(Screens.Login.route) {
-                    popUpTo(navController.currentDestination?.parent?.route.toString()) {
+                    popUpTo(Screens.Home.route) {
                         inclusive = true
                     }
                 }
@@ -51,6 +51,7 @@ class HomeViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.Main) {
                 webView?.saveState(webViewState)
                 navController?.navigate(Screens.QRScreen.route)
+                return@launch
             }
         }
 //        jsBridge.onNavigateLogin?.invoke()

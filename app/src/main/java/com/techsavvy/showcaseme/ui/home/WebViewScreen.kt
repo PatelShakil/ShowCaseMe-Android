@@ -1,14 +1,19 @@
 package com.techsavvy.showcaseme.ui.home
 
+import android.app.DownloadManager
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Environment
 import android.view.ViewGroup
+import android.webkit.URLUtil
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +43,7 @@ import kotlinx.coroutines.launch
 fun WebViewScreen(navController: NavController, viewModel: HomeViewModel) {
     val context = LocalContext.current
     val mainActivity = context as? MainActivity ?: return
+    val toast = LocalSmartToast.current
 
     var isLoading by remember { mutableStateOf(false) }
 
@@ -75,6 +81,26 @@ fun WebViewScreen(navController: NavController, viewModel: HomeViewModel) {
                         settings.databaseEnabled = true
                         settings.allowFileAccess = true
                         settings.userAgentString = System.getProperty("http.agent")
+
+                        setDownloadListener { url, userAgent, contentDisposition, mimeType, contentLength ->
+                            try {
+                                val request = DownloadManager.Request(Uri.parse(url))
+                                request.setMimeType(mimeType)
+                                request.addRequestHeader("User-Agent", userAgent)
+                                request.setDescription("Downloading file...")
+                                request.setTitle(URLUtil.guessFileName(url, contentDisposition, mimeType))
+                                request.allowScanningByMediaScanner()
+                                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(url, contentDisposition, mimeType))
+
+                                val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                                dm.enqueue(request)
+                                toast.show("Downloading file...")
+
+                            } catch (e: Exception) {
+                                toast.show("Error: ${e.message}")
+                            }
+                        }
 
                         webViewClient = object : WebViewClient() {
                             override fun onPageStarted(

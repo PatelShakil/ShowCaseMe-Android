@@ -56,7 +56,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
             is Resource.Success ->{
                 LaunchedEffect(true) {
                     toast.show(it.result.message)
-                    if(it.result.status) {
+                    if(it.result.status == true) {
                         viewModel.helper.saveString("token", it.result.data?.token.toString())
                         navController.navigate(Screens.Home.route) {
                             popUpTo(Screens.Login.route) {

@@ -28,9 +28,17 @@ fun SplashScreen(navController: NavController,viewModel: SplashViewModel) {
             }
             is Resource.Success -> {
                 LaunchedEffect(true) {
-                    navController.navigate(Screens.Home.route) {
-                        popUpTo(Screens.Splash.route) {
-                            inclusive = true
+                    if(it.result.status) {
+                        navController.navigate(Screens.Home.route) {
+                            popUpTo(Screens.Splash.route) {
+                                inclusive = true
+                            }
+                        }
+                    }else{
+                        navController.navigate(Screens.Login.route) {
+                            popUpTo(Screens.Splash.route) {
+                                inclusive = true
+                            }
                         }
                     }
                 }

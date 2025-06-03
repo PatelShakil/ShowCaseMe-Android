@@ -7,7 +7,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import android.view.ViewGroup
+import android.webkit.PermissionRequest
 import android.webkit.URLUtil
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.techsavvy.showcaseme.MainActivity
@@ -81,6 +85,7 @@ fun WebViewScreen(navController: NavController, viewModel: HomeViewModel) {
                         settings.databaseEnabled = true
                         settings.allowFileAccess = true
                         settings.userAgentString = System.getProperty("http.agent")
+                        settings.mediaPlaybackRequiresUserGesture = false
 
                         setDownloadListener { url, userAgent, contentDisposition, mimeType, contentLength ->
                             try {
@@ -89,7 +94,7 @@ fun WebViewScreen(navController: NavController, viewModel: HomeViewModel) {
                                 request.addRequestHeader("User-Agent", userAgent)
                                 request.setDescription("Downloading file...")
                                 request.setTitle(URLUtil.guessFileName(url, contentDisposition, mimeType))
-                                request.allowScanningByMediaScanner()
+//                                request.allowScanningByMediaScanner()
                                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                                 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(url, contentDisposition, mimeType))
 
@@ -103,6 +108,14 @@ fun WebViewScreen(navController: NavController, viewModel: HomeViewModel) {
                         }
 
                         webViewClient = object : WebViewClient() {
+                            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                                if (url != null && (!url.startsWith(URLS.WEB_URL))) {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                    view?.context?.startActivity(intent)
+                                    return true
+                                }
+                                return false
+                            }
                             override fun onPageStarted(
                                 view: WebView?,
                                 url: String?,
@@ -160,6 +173,8 @@ fun WebViewScreen(navController: NavController, viewModel: HomeViewModel) {
                             }
                         }
 
+
+
                         webChromeClient = object : WebChromeClient() {
                             override fun onShowFileChooser(
                                 webView: WebView?,
@@ -185,6 +200,12 @@ fun WebViewScreen(navController: NavController, viewModel: HomeViewModel) {
                                     false
                                 }
                             }
+
+                            override fun onPermissionRequest(request: PermissionRequest?) {
+                                super.onPermissionRequest(request)
+                                Log.d("PermissionRequest", "onPermissionRequest: $request")
+                                request?.grant(request.resources)
+                            }
                         }
 
 
@@ -208,7 +229,8 @@ fun WebViewScreen(navController: NavController, viewModel: HomeViewModel) {
 
                     Column {
                         AndroidView(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxSize()
+                                .padding(top = 12.dp),
                             factory = { webView }
                         )
                     }

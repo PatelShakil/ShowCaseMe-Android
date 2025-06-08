@@ -9,9 +9,8 @@ import java.io.FileOutputStream
 
 
 object URLS{
-    const val API_URL = "http://192.168.205.51:5183/api/"
-    const val WEB_URL = "http://192.168.205.51:5173/"
-    const val STORAGE_URL = "http://192.168.205.51:5183/"
+    const val API_URL = "https://showcasemebackend20250602114034-ctb2cqawdka0acaz.centralindia-01.azurewebsites.net/api/"
+    const val WEB_URL = "https://showcaseme.patelshakil.tech/"
 }
 
 fun isValidUsername(input: String): Boolean {

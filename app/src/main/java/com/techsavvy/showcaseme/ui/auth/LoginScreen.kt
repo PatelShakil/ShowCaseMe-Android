@@ -1,18 +1,17 @@
 package com.techsavvy.showcaseme.ui.auth
 
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
@@ -23,14 +22,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.techsavvy.showcaseme.common.Resource
+import com.techsavvy.showcaseme.common.URLS
 import com.techsavvy.showcaseme.ui.nav.Screens
-import com.techsavvy.showcaseme.utils.Helpers
 import com.techsavvy.showcaseme.widgets.PremiumLoadingDialog
 import com.techsavvy.showcaseme.widgets.utils.LocalSmartToast
 
@@ -39,8 +39,8 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-    val context = LocalContext.current
     val toast = LocalSmartToast.current
+    val uriHandler = LocalUriHandler.current
 
     viewModel.loginState.value.let { 
         when(it){
@@ -90,7 +90,8 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
 
         Text("ShowCaseMe",
             style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.align(Alignment.TopCenter)
+            modifier = Modifier
+                .align(Alignment.TopCenter)
                 .clip(RoundedCornerShape(15.dp))
                 .background(
                     brush = Brush.verticalGradient(
@@ -163,6 +164,19 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(
+                        onClick = {
+                            uriHandler.openUri(URLS.WEB_URL + "login?isfp=true&email=$email")
+                        }
+                    ) {
+                        Text("Forgot Password?", color = MaterialTheme.colorScheme.primary)
+                    }
+                }
 
                 Button(
                     onClick = {

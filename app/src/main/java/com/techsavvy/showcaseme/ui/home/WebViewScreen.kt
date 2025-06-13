@@ -203,8 +203,7 @@ fun WebViewScreen(navController: NavController, viewModel: HomeViewModel) {
 
                             override fun onPermissionRequest(request: PermissionRequest?) {
                                 super.onPermissionRequest(request)
-                                Log.d("PermissionRequest", "onPermissionRequest: ${request?.resources.toString()}")
-                                request?.grant(request.resources)
+                                Log.d("PermissionRequest", "onPermissionRequest: ${request?.resources?.first()}")
                             }
                         }
 

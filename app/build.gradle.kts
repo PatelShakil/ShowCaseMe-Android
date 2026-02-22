@@ -84,6 +84,8 @@ dependencies {
 
     //qrcode generator
     implementation(libs.custom.qr.generator)
+//    custom-qr-generator = { module = "com.github.alexzhirkevich:custom-qr-generator", version.ref = "customQrGenerator" }
+//    customQrGenerator = "2.0.0-alpha01"
 
 
     //color picker

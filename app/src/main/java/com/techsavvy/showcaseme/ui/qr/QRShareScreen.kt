@@ -166,7 +166,7 @@ fun QRShareScreen(navController: NavController,viewModel: GenerateQRViewModel) {
                             Button(
                                 onClick = {
                                     val clip = ClipData.newPlainText(
-                                        "SmugLinks",
+                                        "ShowCaseMe",
                                         viewModel.url.value
                                     )
                                     (getSystemService(

@@ -64,7 +64,7 @@ class GenerateQRViewModel @Inject constructor(
     private val repo : AuthRepo,
     private val helper : Helpers
 ) : ViewModel(){
-    val url = mutableStateOf(URLS.WEB_URL)
+    val url = mutableStateOf(URLS.WEB_URL) //your own URL -- BASE_URL / SLUG https://savvyqr.techsavvysolution.in
 
     var defOptions = createQrVectorOptions {
         colors {

@@ -8,9 +8,11 @@ import java.io.File
 import java.io.FileOutputStream
 
 
+// Kept for source compatibility — real values live in Brand (Brand.kt).
+// WEB_URL is the authenticated dashboard; use Brand.PUBLIC_URL for QR codes / public share links.
 object URLS{
-    const val API_URL = "https://showcasemebackend20250602114034-ctb2cqawdka0acaz.centralindia-01.azurewebsites.net/api/"
-    const val WEB_URL = "https://showcaseme.patelshakil.tech/"
+    const val API_URL = Brand.API_URL
+    const val WEB_URL = Brand.DASHBOARD_URL
 }
 
 fun isValidUsername(input: String): Boolean {

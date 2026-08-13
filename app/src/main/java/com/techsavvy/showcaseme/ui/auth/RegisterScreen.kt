@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -63,6 +64,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.navigation.NavController
+import com.techsavvy.showcaseme.R
+import com.techsavvy.showcaseme.common.Brand
 import com.techsavvy.showcaseme.common.Resource
 import com.techsavvy.showcaseme.common.Response
 import com.techsavvy.showcaseme.common.drawableToFile
@@ -173,9 +176,7 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
             .padding(16.dp),
     ) {
 
-        Text(
-            "ShowCaseMe",
-            style = MaterialTheme.typography.titleLarge,
+        Row(
             modifier = Modifier
                 .clip(RoundedCornerShape(15.dp))
                 .background(
@@ -189,9 +190,21 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
                 )
                 .padding(10.dp)
                 .align(Alignment.CenterHorizontally),
-            color = Color.DarkGray,
-            fontWeight = Bold
-        )
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painterResource(R.drawable.brand_logo),
+                contentDescription = Brand.NAME,
+                modifier = Modifier.size(32.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                Brand.NAME,
+                style = MaterialTheme.typography.titleLarge,
+                color = Color.DarkGray,
+                fontWeight = Bold
+            )
+        }
         Column(
             modifier = Modifier
                 .padding(12.dp)

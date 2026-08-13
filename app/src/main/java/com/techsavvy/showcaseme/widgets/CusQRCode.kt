@@ -21,14 +21,14 @@ import com.github.alexzhirkevich.customqrgenerator.encoder.QrCodeMatrix
 import com.github.alexzhirkevich.customqrgenerator.style.QrShape
 import com.github.alexzhirkevich.customqrgenerator.style.RandomBased
 import com.github.alexzhirkevich.customqrgenerator.vector.QrCodeDrawable
-import com.techsavvy.showcaseme.common.URLS
+import com.techsavvy.showcaseme.common.Brand
 import com.techsavvy.showcaseme.ui.qr.GenerateQRViewModel
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.random.Random
 @Composable
 fun QRCodeViewHome(modifier : Modifier = Modifier,url : String) {
-    val qrFinal = QrCodeDrawable(QrData.Url(URLS.WEB_URL + url))
+    val qrFinal = QrCodeDrawable(QrData.Url(Brand.PUBLIC_URL + url))
     if(qrFinal.isVisible ) {
         Box(contentAlignment = Alignment.Center,
             modifier = modifier) {

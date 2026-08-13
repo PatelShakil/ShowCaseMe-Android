@@ -3,6 +3,7 @@ package com.techsavvy.showcaseme.ui.auth
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,11 +24,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.techsavvy.showcaseme.R
+import com.techsavvy.showcaseme.common.Brand
 import com.techsavvy.showcaseme.common.Resource
 import com.techsavvy.showcaseme.common.URLS
 import com.techsavvy.showcaseme.ui.nav.Screens
@@ -88,8 +92,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
         contentAlignment = Alignment.Center
     ) {
 
-        Text("ShowCaseMe",
-            style = MaterialTheme.typography.titleLarge,
+        Row(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .clip(RoundedCornerShape(15.dp))
@@ -102,11 +105,21 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                         )
                     )
                 )
-                .padding(10.dp)
-                ,
-            color = Color.DarkGray,
-            fontWeight = Bold
-        )
+                .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painterResource(R.drawable.brand_logo),
+                contentDescription = Brand.NAME,
+                modifier = Modifier.size(32.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(Brand.NAME,
+                style = MaterialTheme.typography.titleLarge,
+                color = Color.DarkGray,
+                fontWeight = Bold
+            )
+        }
 
         Card(
             modifier = Modifier.fillMaxWidth(),

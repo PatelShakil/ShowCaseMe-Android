@@ -71,8 +71,8 @@ import com.techsavvy.showcaseme.widgets.CusColorPicker
 import com.techsavvy.showcaseme.widgets.LoadingBox
 import com.techsavvy.showcaseme.widgets.LoadingWithContent
 import com.techsavvy.showcaseme.widgets.QRContainer
+import com.techsavvy.showcaseme.common.Brand
 import com.techsavvy.showcaseme.common.Resource
-import com.techsavvy.showcaseme.common.URLS
 import com.techsavvy.showcaseme.ui.nav.Screens
 import com.techsavvy.showcaseme.ui.theme.WHITE
 import com.techsavvy.showcaseme.ui.theme.YellowColor
@@ -117,7 +117,7 @@ fun GenerateQRScreen(navController: NavController,viewModel: GenerateQRViewModel
 
                         is Resource.Success -> {
                             val user = it.result.data?.user
-                            viewModel.url.value = URLS.WEB_URL + user?.username + "?action=android_qr_share"
+                            viewModel.url.value = Brand.PUBLIC_URL + user?.username + "?action=android_qr_share"
                             viewModel.generateQRCode()
                             LoadingWithContent(
                                 isLoading = !viewModel.qrDrawable.value.isVisible,

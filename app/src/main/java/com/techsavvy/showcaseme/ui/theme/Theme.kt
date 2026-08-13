@@ -23,19 +23,16 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = MainColor,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = BrandAccent,
+    onPrimary = WHITE,
+    secondary = BrandGold,
+    onSecondary = BrandInk,
+    tertiary = BrandAccentDeep,
+    onTertiary = WHITE,
+    background = BrandPaper,
+    onBackground = BrandInk,
+    surface = BrandPaper,
+    onSurface = BrandInk
 )
 
 @Composable
@@ -68,9 +65,9 @@ fun ShowCaseMeTheme(
                 WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
                 WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
             )
-            window.statusBarColor = Color(0xFFEDF7FF).toArgb()
+            window.statusBarColor = BrandPaper.toArgb()
         } else {
-            window.statusBarColor = Color(0xFFEDF7FF).toArgb()// Set your desired color here
+            window.statusBarColor = BrandPaper.toArgb()// Set your desired color here
         }
     }
 

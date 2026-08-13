@@ -62,6 +62,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.techsavvy.showcaseme.common.Brand
 import com.techsavvy.showcaseme.common.Resource
 import com.techsavvy.showcaseme.widgets.LoadingBox
 import com.techsavvy.showcaseme.widgets.QRContainer
@@ -166,7 +167,7 @@ fun QRShareScreen(navController: NavController,viewModel: GenerateQRViewModel) {
                             Button(
                                 onClick = {
                                     val clip = ClipData.newPlainText(
-                                        "ShowCaseMe",
+                                        Brand.NAME,
                                         viewModel.url.value
                                     )
                                     (getSystemService(
@@ -370,7 +371,7 @@ fun QRViewShare(viewModel: GenerateQRViewModel) {
                                     color = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
-                                    "@ShowCaseMe",
+                                    "@" + Brand.NAME,
                                     fontWeight = FontWeight.Black,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 12.sp,

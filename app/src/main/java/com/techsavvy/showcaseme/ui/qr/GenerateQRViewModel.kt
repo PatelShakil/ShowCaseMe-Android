@@ -40,9 +40,9 @@ import com.github.alexzhirkevich.customqrgenerator.vector.style.QrVectorPixelSha
 import com.github.alexzhirkevich.customqrgenerator.vector.style.asBallShape
 import com.github.alexzhirkevich.customqrgenerator.vector.style.asFrameShape
 import com.github.alexzhirkevich.customqrgenerator.vector.style.asPixelShape
+import com.techsavvy.showcaseme.common.Brand
 import com.techsavvy.showcaseme.common.Resource
 import com.techsavvy.showcaseme.common.Response
-import com.techsavvy.showcaseme.common.URLS
 import com.techsavvy.showcaseme.data.models.api_response.JwtVerifyResponse
 import com.techsavvy.showcaseme.data.repo.api.auth.AuthRepo
 import com.techsavvy.showcaseme.ui.qr.shapes.Heart
@@ -64,7 +64,7 @@ class GenerateQRViewModel @Inject constructor(
     private val repo : AuthRepo,
     private val helper : Helpers
 ) : ViewModel(){
-    val url = mutableStateOf(URLS.WEB_URL) //your own URL -- BASE_URL / SLUG https://savvyqr.techsavvysolution.in
+    val url = mutableStateOf(Brand.PUBLIC_URL) // public profile URL -- Brand.PUBLIC_URL + username slug
 
     var defOptions = createQrVectorOptions {
         colors {
@@ -87,7 +87,7 @@ class GenerateQRViewModel @Inject constructor(
         if(requestPermissionsIfNecessary(context as Activity)){
             if(saveFile(filename,bitmap,context)){
                 Toast.makeText(context, "QR Saved to Gallery", Toast.LENGTH_SHORT).show()
-                shareImageWithCaption(dest,Uri.parse(STORAGE_PATH + "/$filename.png"),"${url.value} \n\nClick to view full Social site of ${userName}\n\nDownload ShowCaseMe Application\nhttps://patelshakil.tech/showcaseme.html",context)
+                shareImageWithCaption(dest,Uri.parse(STORAGE_PATH + "/$filename.png"),"${url.value} \n\nClick to view full Social site of ${userName}\n\nDownload ${Brand.NAME} Application\n${Brand.PUBLIC_URL}",context)
             }
 
         }else{
@@ -97,7 +97,7 @@ class GenerateQRViewModel @Inject constructor(
     }
 
     fun onSave(context : Activity,bitmap : Bitmap)=viewModelScope.launch {
-        val filename = "ShowCaseMe_QR_" + convertLongToDate(System.currentTimeMillis(),"hh_mm_a_dd_MMM_yyyy")
+        val filename = Brand.NAME_LATIN + "_QR_" + convertLongToDate(System.currentTimeMillis(),"hh_mm_a_dd_MMM_yyyy")
         if(requestPermissionsIfNecessary(context)){
             if(saveFile(filename,bitmap,context)){
                 Toast.makeText(context, "QR Saved to Gallery", Toast.LENGTH_SHORT).show()

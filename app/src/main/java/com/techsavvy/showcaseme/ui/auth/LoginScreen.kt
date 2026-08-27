@@ -78,16 +78,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color.White,
-                        Color(0xFFCEE9FE),
-                        Color(0xFFCEE9FE),
-                        Color(0xFFCEE9FE),
-                    ) // white to #CEE9FE
-                )
-            )
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -96,15 +87,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .clip(RoundedCornerShape(15.dp))
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.White,
-                            Color(0xFFCEE9FE),
-                            Color(0xFFCEE9FE),
-                        )
-                    )
-                )
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                 .padding(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -116,7 +99,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
             Spacer(modifier = Modifier.width(8.dp))
             Text(Brand.NAME,
                 style = MaterialTheme.typography.titleLarge,
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = Bold
             )
         }
@@ -125,27 +108,26 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(8.dp),
             shape = MaterialTheme.shapes.large,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
         ) {
             Column(
                 modifier = Modifier
-                    .background(
-                        brush = Brush.radialGradient(
-                            colors = listOf(
-                                Color(0xFFD6ECFD),
-                                Color(0xFFE4EFF8),
-                                Color(0xFFDDEEFC),
-                                Color(0xFFE5EFF8)
-                            ) // white to #CEE9FE
-                        )
-                    )
                     .padding(24.dp)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
 
-                Text("Welcome Back 👋", style = MaterialTheme.typography.headlineSmall)
-                Text("Login to your account", fontSize = 14.sp, color = Color.Gray)
+                Text("Welcome Back 👋", 
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text("Login to your account", 
+                    fontSize = 14.sp, 
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
 
                 OutlinedTextField(
                     value = email,
@@ -156,7 +138,11 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                    )
                 )
 
                 OutlinedTextField(
@@ -175,7 +161,11 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                    )
                 )
 
                 Row(
@@ -202,7 +192,11 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp)
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 ) {
                     Text("Login")
                 }
@@ -212,7 +206,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Don't have an account?", color = Color.Gray)
+                        Text("Don't have an account?", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             "Register",

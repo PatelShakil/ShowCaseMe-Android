@@ -117,7 +117,7 @@ fun CusColorPickerUtil(title: String, onDismiss: () -> Unit, onColorSelected: (C
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MainColor),
+                    .background(MaterialTheme.colorScheme.secondary),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(

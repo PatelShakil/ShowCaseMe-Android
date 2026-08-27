@@ -137,27 +137,38 @@ fun isInternetAvailable(context: Context): Boolean {
     return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }
 
+/**
+ * Storage permissions actually required for saving the generated QR image.
+ *
+ * Google Play "Photo and Video Permissions" policy: READ_MEDIA_IMAGES /
+ * READ_MEDIA_VIDEO / READ_EXTERNAL_STORAGE must NOT be requested. They are not
+ * needed either — this app only WRITES its own images; file uploads in the
+ * WebView go through the permission-less system picker
+ * (FileChooserParams.createIntent()).
+ *
+ * API 29+ (Android 10+): contributing images to public media collections needs
+ * no permission at all. API <= 28: legacy WRITE_EXTERNAL_STORAGE is required.
+ */
 fun getPermissions(): Array<String> {
-    return if (Build.VERSION.SDK_INT >= 33) {
-        arrayOf(
-            Manifest.permission.READ_MEDIA_IMAGES,
-        )
+    return if (Build.VERSION.SDK_INT >= 29) {
+        emptyArray()
     } else {
         arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
         )
     }
 }
 fun requestPermissionsIfNecessary(activity: Activity): Boolean {
     val permissions = getPermissions()
-    ActivityCompat.requestPermissions(activity, permissions, 1)
+    if (permissions.isEmpty()) return true
 
-
-
-    return ContextCompat.checkSelfPermission(activity,permissions[0]) == PackageManager.PERMISSION_GRANTED &&
-            if (permissions.size > 1) ContextCompat.checkSelfPermission(activity,permissions[1]) == PackageManager.PERMISSION_GRANTED
-    else true
+    val allGranted = permissions.all {
+        ContextCompat.checkSelfPermission(activity, it) == PackageManager.PERMISSION_GRANTED
+    }
+    if (!allGranted) {
+        ActivityCompat.requestPermissions(activity, permissions, 1)
+    }
+    return allGranted
 }
 
 

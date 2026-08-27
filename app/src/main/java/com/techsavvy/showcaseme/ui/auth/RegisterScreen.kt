@@ -1,7 +1,6 @@
 package com.techsavvy.showcaseme.ui.auth
 
 import android.graphics.drawable.Drawable
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -32,13 +31,7 @@ import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -49,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -163,31 +155,14 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color.White,
-                        Color(0xFFCEE9FE),
-                        Color(0xFFCEE9FE),
-                        Color(0xFFCEE9FE),
-                    ) // white to #CEE9FE
-                )
-            )
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
     ) {
 
         Row(
             modifier = Modifier
                 .clip(RoundedCornerShape(15.dp))
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.White,
-                            Color(0xFFCEE9FE),
-                            Color(0xFFCEE9FE),
-                        )
-                    )
-                )
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                 .padding(10.dp)
                 .align(Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
@@ -201,7 +176,7 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
             Text(
                 Brand.NAME,
                 style = MaterialTheme.typography.titleLarge,
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = Bold
             )
         }
@@ -214,12 +189,14 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
-            Text("Get Started 🏁", style = MaterialTheme.typography.headlineSmall)
-//                Text("Create your account", fontSize = 14.sp, color = Color.Gray)
-            HorizontalDivider()
+            Text("Get Started 🏁", 
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = if (profile != null) Arrangement.Center else Arrangement.Center,
+                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (profile != null) {
@@ -234,13 +211,18 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
                     Spacer(Modifier.width(15.dp))
                 }
                 Button(
-                    {
+                    onClick = {
                         if (profile == null) {
                             getProfileImage.launch("image/*")
                         } else {
                             profile = null
                         }
-                    }) {
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
+                    )
+                ) {
                     Text(
                         if (profile == null) "Choose Profile" else "Remove"
                     )
@@ -399,7 +381,11 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
 
                 }, modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
             ) {
                 Text("Register")
             }
@@ -409,7 +395,7 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Already have an account?", color = Color.Gray)
+                    Text("Already have an account?", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         "Login",

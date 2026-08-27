@@ -40,7 +40,7 @@ fun TopBar(navController: NavController) {
     }
 
     Column(modifier = Modifier.fillMaxWidth()){
-        if(navController.currentBackStackEntryAsState().value?.destination?.route != Screens.Home.route) {
+        if(navController.currentBackStackEntryAsState().value?.destination?.route != Screens.Home.route && navController.currentBackStackEntryAsState().value?.destination?.route != Screens.Splash.route) {
             AnimatedVisibility(getRoute() != Screens.Home) {
                 TopAppBar(
                     navigationIcon = {
@@ -56,8 +56,9 @@ fun TopBar(navController: NavController) {
                         Text(getRoute().title)
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        titleContentColor = TopAppBarDefaults.topAppBarColors().titleContentColor
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                     )
                 )
             }

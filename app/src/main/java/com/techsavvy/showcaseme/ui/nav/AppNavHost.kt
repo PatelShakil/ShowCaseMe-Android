@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.techsavvy.showcaseme.ui.splash.SplashScreen
+import com.techsavvy.showcaseme.ui.auth.ForgotPasswordScreen
 import com.techsavvy.showcaseme.ui.auth.LoginScreen
 import com.techsavvy.showcaseme.ui.auth.RegisterScreen
 import com.techsavvy.showcaseme.ui.home.HomeScreen
@@ -41,6 +42,9 @@ fun AppNavHost() {
             }
             composable(Screens.Register.route) {
                 RegisterScreen(navController,hiltViewModel())
+            }
+            composable(Screens.ForgotPassword.route) {
+                ForgotPasswordScreen(navController, hiltViewModel())
             }
             composable(Screens.Home.route){
                 HomeScreen(navController,hiltViewModel())

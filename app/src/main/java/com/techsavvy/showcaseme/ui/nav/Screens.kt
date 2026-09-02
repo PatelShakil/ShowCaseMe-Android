@@ -8,6 +8,7 @@ sealed class Screens(
 
     object Login : Screens("login","Login")
     object Register : Screens("register","Register")
+    object ForgotPassword : Screens("forgot_password","Reset Password")
     object Home : Screens("home","Home")
     object QRScreen : Screens("qr","QR Code")
     object QRShare : Screens("qrShare","QR Share")

@@ -1,411 +1,261 @@
 package com.techsavvy.showcaseme.ui.auth
 
-import android.graphics.drawable.Drawable
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.VerifiedUser
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.PinDrop
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
-import androidx.core.graphics.drawable.toDrawable
 import androidx.navigation.NavController
-import com.techsavvy.showcaseme.R
-import com.techsavvy.showcaseme.common.Brand
-import com.techsavvy.showcaseme.common.Resource
-import com.techsavvy.showcaseme.common.Response
-import com.techsavvy.showcaseme.common.drawableToFile
-import com.techsavvy.showcaseme.common.isValidUsername
-import com.techsavvy.showcaseme.data.models.UserModel
+import com.techsavvy.showcaseme.common.isValidEmail
+import com.techsavvy.showcaseme.common.isValidPassword
+import com.techsavvy.showcaseme.common.isValidPhone
+import com.techsavvy.showcaseme.common.isValidPincode
+import com.techsavvy.showcaseme.common.orNullIfBlank
+import com.techsavvy.showcaseme.data.models.api_request.RegisterRequest
+import com.techsavvy.showcaseme.ui.auth.components.AuthScaffold
+import com.techsavvy.showcaseme.ui.auth.components.AuthSwitchRow
+import com.techsavvy.showcaseme.ui.auth.components.BrandPasswordField
+import com.techsavvy.showcaseme.ui.auth.components.BrandPrimaryButton
+import com.techsavvy.showcaseme.ui.auth.components.BrandTextField
+import com.techsavvy.showcaseme.ui.auth.components.SectionHeading
 import com.techsavvy.showcaseme.ui.nav.Screens
 import com.techsavvy.showcaseme.widgets.PremiumLoadingDialog
 import com.techsavvy.showcaseme.widgets.utils.LocalSmartToast
-import com.techsavvy.showcaseme.widgets.utils.loadBitmapFromLocalStorage
-import com.techsavvy.showcaseme.widgets.utils.rememberGetContentContractLauncher
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
+/**
+ * POST /api/auth/register.
+ *
+ * Every field below is one the API actually validates and persists:
+ * name, email, phone, password (required set) plus optional state, city and
+ * pincode. The website slug is chosen later in the dashboard onboarding wizard,
+ * and the avatar is set from the profile screen (POST /api/upload then
+ * PUT /api/my/profile) — neither belongs on the signup form.
+ */
 @Composable
 fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
-    var email by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
-    var name by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
-    var bio by remember { mutableStateOf("") }
-    var profile by remember { mutableStateOf<Drawable?>(null) }
-    var profileStr by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    val context = LocalContext.current
     val toast = LocalSmartToast.current
-    var usernameError by remember { mutableStateOf("") }
+    val busy by viewModel.busy.collectAsState()
 
-    val getProfileImage = rememberGetContentContractLauncher(onResult = {
-        if (it != null) {
-            profileStr = it.toString()
-            loadBitmapFromLocalStorage(context, profileStr, {
-                profile = it.toDrawable(context.resources)
-            }) {
+    var name by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var state by remember { mutableStateOf("") }
+    var city by remember { mutableStateOf("") }
+    var pincode by remember { mutableStateOf("") }
 
-            }
+    var showLocation by remember { mutableStateOf(false) }
+    var submitted by remember { mutableStateOf(false) }
+
+    val nameError = submitted && name.isBlank()
+    val emailError = submitted && !isValidEmail(email)
+    val phoneError = submitted && phone.isNotBlank() && !isValidPhone(phone)
+    val passwordError = submitted && !isValidPassword(password)
+    val confirmError = submitted && confirmPassword != password
+    val pincodeError = submitted && !isValidPincode(pincode)
+
+    fun submit() {
+        submitted = true
+        when {
+            name.isBlank() -> toast.show("Enter your name")
+            name.length > 100 -> toast.show("Name must be 100 characters or fewer")
+            !isValidEmail(email) -> toast.show("Enter a valid email address")
+            phone.isNotBlank() && !isValidPhone(phone) -> toast.show("Enter a valid phone number")
+            !isValidPassword(password) -> toast.show("Password must be at least 6 characters")
+            confirmPassword != password -> toast.show("Passwords do not match")
+            !isValidPincode(pincode) -> toast.show("Pincode must be digits only")
+            else -> viewModel.register(
+                RegisterRequest(
+                    name = name.trim(),
+                    email = email.trim(),
+                    password = password,
+                    phone = phone.orNullIfBlank(),
+                    state = state.orNullIfBlank(),
+                    city = city.orNullIfBlank(),
+                    pincode = pincode.orNullIfBlank(),
+                )
+            )
         }
-    })
+    }
 
-    val coroutineScope = rememberCoroutineScope()
-    var usernameDebounceJob by remember { mutableStateOf<Job?>(null) }
-
-    LaunchedEffect(username) {
-        usernameDebounceJob?.cancel()
-        usernameDebounceJob = coroutineScope.launch {
-            delay(500) // 500ms debounce
-            if (isValidUsername(username)) {
-                viewModel.checkUserExists(username)
-                usernameError = ""
-                println("Debounced username Input: $username")
-            } else {
-                println("Invalid username entered: $username")
-                // Optionally, you can show an error state or Snackbar here
-                if (username.isNotEmpty()) {
-                    usernameError = "Invalid username characters!"
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is AuthEvent.Message -> toast.show(event.text)
+                is AuthEvent.Error -> toast.show(event.text)
+                AuthEvent.Authenticated -> navController.navigate(Screens.Home.route) {
+                    popUpTo(Screens.Login.route) { inclusive = true }
                 }
+                else -> Unit
             }
         }
     }
 
+    busy?.let { PremiumLoadingDialog(message = it, show = true) }
 
-
-    viewModel.signupState.value.let {
-        when (it) {
-            is Resource.Loading -> {
-                PremiumLoadingDialog(message = "Registration Process Started......", true)
-            }
-
-            is Resource.Failure -> {
-                LaunchedEffect(true) {
-                    toast.show(it.message)
-                }
-            }
-
-            is Resource.Success -> {
-                LaunchedEffect(true) {
-                    toast.show(it.result.message)
-                    if (it.result.status) {
-                        viewModel.helper.saveString("token", it.result.data?.token.toString())
-                        navController.navigate(Screens.Home.route) {
-                            popUpTo(Screens.Login.route) {
-                                inclusive = true
-                            }
-                        }
-                    }
-                }
-            }
-
-            else -> {}
+    AuthScaffold(
+        title = "Create your account",
+        subtitle = "One account runs your website, product catalogue and WhatsApp enquiries.",
+        onBack = { navController.popBackStack() },
+        footer = {
+            AuthSwitchRow(
+                prompt = "Already registered?",
+                action = "Sign in"
+            ) { navController.popBackStack() }
         }
-    }
-
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp),
     ) {
+        BrandTextField(
+            value = name,
+            onValueChange = { if (it.length <= 100) name = it },
+            label = "Full name",
+            icon = Icons.Default.Person,
+            keyboardType = KeyboardType.Text,
+            isError = nameError,
+            supportingText = if (nameError) "Name is required" else null
+        )
+
+        BrandTextField(
+            value = email,
+            onValueChange = { email = it.trim() },
+            label = "Email",
+            icon = Icons.Default.Email,
+            keyboardType = KeyboardType.Email,
+            isError = emailError,
+            supportingText = if (emailError) "Enter a valid email address" else null
+        )
+
+        BrandTextField(
+            value = phone,
+            onValueChange = { input ->
+                val cleaned = input.filter { it.isDigit() || it == '+' || it == ' ' }
+                if (cleaned.length <= 20) phone = cleaned
+            },
+            label = "Phone (optional)",
+            icon = Icons.Default.Phone,
+            keyboardType = KeyboardType.Phone,
+            isError = phoneError,
+            supportingText = when {
+                phoneError -> "Enter a valid phone number"
+                else -> "Used for WhatsApp enquiries from your website"
+            }
+        )
+
+        BrandPasswordField(
+            value = password,
+            onValueChange = { if (it.length <= 100) password = it },
+            label = "Password",
+            icon = Icons.Default.Lock,
+            isError = passwordError,
+            supportingText = if (passwordError) "At least 6 characters" else "At least 6 characters"
+        )
+
+        BrandPasswordField(
+            value = confirmPassword,
+            onValueChange = { if (it.length <= 100) confirmPassword = it },
+            label = "Confirm password",
+            icon = Icons.Default.Lock,
+            imeAction = ImeAction.Done,
+            isError = confirmError,
+            supportingText = if (confirmError) "Passwords do not match" else null,
+            onImeDone = { submit() }
+        )
+
+        Spacer(Modifier.height(2.dp))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
         Row(
             modifier = Modifier
-                .clip(RoundedCornerShape(15.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                .padding(10.dp)
-                .align(Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painterResource(R.drawable.brand_logo),
-                contentDescription = Brand.NAME,
-                modifier = Modifier.size(32.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                Brand.NAME,
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = Bold
-            )
-        }
-        Column(
-            modifier = Modifier
-                .padding(12.dp)
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .clickable { showLocation = !showLocation }
+                .padding(vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
-            Text("Get Started 🏁", 
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (profile != null) {
-                    Image(
-                        profile?.toBitmap(1024, 1024)!!.asImageBitmap(),
-                        "",
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                    Spacer(Modifier.width(15.dp))
-                }
-                Button(
-                    onClick = {
-                        if (profile == null) {
-                            getProfileImage.launch("image/*")
-                        } else {
-                            profile = null
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onSecondary
-                    )
-                ) {
-                    Text(
-                        if (profile == null) "Choose Profile" else "Remove"
-                    )
-                }
-
-            }
-
-
-            OutlinedTextField(
-                value = username,
-                onValueChange = {
-                    username = it.lowercase().filter { char -> char.isLetterOrDigit() || char == '_' }
-                },
-                label = { Text("Username") },
-                leadingIcon = { Icon(Icons.Default.VerifiedUser, contentDescription = "Email") },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next
-                ),
-                modifier = Modifier.fillMaxWidth(),
-                isError = when {
-                    username.isEmpty() -> false // avoid red on empty input
-                    !isValidUsername(username) -> true
-                    viewModel.checkUserExists.value is Resource.Success -> {
-                        !(viewModel.checkUserExists.value as Resource.Success<Response<String?>>).result.status
-                    }
-                    else -> false
-                },
-                supportingText = {
-                    viewModel.checkUserExists.value.let {
-                        when (it) {
-                            is Resource.Loading -> {
-                                Text("Checking...")
-                            }
-
-                            is Resource.Success -> {
-                                Text(if (usernameError.isNotEmpty()) usernameError else it.result.message)
-                            }
-
-                            is Resource.Failure -> {
-                                Text(it.message)
-                            }
-
-                            else -> {}
-                        }
-                    }
-                }
-
-            )
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Name") },
-                leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Email") },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-            OutlinedTextField(
-                value = phone,
-                onValueChange = { phone = it },
-                label = { Text("Phone") },
-                leadingIcon = { Icon(Icons.Default.Phone, contentDescription = "Email") },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Phone, imeAction = ImeAction.Next
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-            OutlinedTextField(
-                value = bio,
-                onValueChange = { bio = it },
-                label = { Text("Bio") },
-                leadingIcon = { Icon(Icons.Default.Description, contentDescription = "Email") },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email") },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
-                trailingIcon = {
-                    val icon =
-                        if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(imageVector = icon, contentDescription = "Toggle Password Visibility")
-                    }
-                },
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Password, imeAction = ImeAction.Done
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Button(
-                onClick = {
-                    // Authenticate here or call ViewModel
-                    when{
-                      !isValidUsername(username) -> {
-                            toast.show("Invalid Username")
-                            return@Button
-                        }
-                        name.isEmpty() -> {
-                            toast.show("Name cannot be empty")
-                            return@Button
-                        }
-                        email.isEmpty() -> {
-                            toast.show("Email cannot be empty")
-                            return@Button
-                        }
-                        phone.isEmpty() -> {
-                            toast.show("Phone cannot be empty")
-                            return@Button
-                        }
-                        bio.isEmpty() -> {
-                            toast.show("Bio cannot be empty")
-                            return@Button
-                        }
-                        password.isEmpty() -> {
-                            toast.show("Password cannot be empty")
-                            return@Button
-                        }
-                        profile == null -> {
-                            toast.show("Please Select Profile Image")
-                            return@Button
-                        }
-                        else -> {
-                            viewModel.signup(
-                                UserModel(
-                                    username = username,
-                                    name = name,
-                                    email = email,
-                                    phone = phone,
-                                    bio = bio,
-                                    password = password
-                                ), drawableToFile(context,profile!!)
-                            )
-                        }
-                    }
-
-
-
-                }, modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+            Column {
+                SectionHeading("Business location")
+                Text(
+                    text = "Optional — helps customers find you",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-            ) {
-                Text("Register")
             }
+            Spacer(Modifier.width(8.dp))
+            Icon(
+                imageVector = if (showLocation) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                contentDescription = if (showLocation) "Hide location fields" else "Show location fields",
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
 
-            AnimatedVisibility(visible = true, enter = fadeIn(), exit = fadeOut()) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Already have an account?", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        "Login",
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.clickable {
-                            navController.popBackStack()
-                        })
-                }
-
+        AnimatedVisibility(visible = showLocation) {
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                BrandTextField(
+                    value = state,
+                    onValueChange = { if (it.length <= 100) state = it },
+                    label = "State",
+                    icon = Icons.Default.Map
+                )
+                BrandTextField(
+                    value = city,
+                    onValueChange = { if (it.length <= 100) city = it },
+                    label = "City",
+                    icon = Icons.Default.LocationCity
+                )
+                BrandTextField(
+                    value = pincode,
+                    onValueChange = { input ->
+                        val digits = input.filter { it.isDigit() }
+                        if (digits.length <= 10) pincode = digits
+                    },
+                    label = "Pincode",
+                    icon = Icons.Default.PinDrop,
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done,
+                    isError = pincodeError,
+                    supportingText = if (pincodeError) "Digits only, up to 10" else null,
+                    onImeDone = { submit() }
+                )
             }
         }
+
+        Spacer(Modifier.height(2.dp))
+
+        BrandPrimaryButton(
+            text = "Create account",
+            onClick = { submit() },
+            loading = busy != null
+        )
     }
 }

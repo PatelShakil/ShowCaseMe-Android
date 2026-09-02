@@ -1,6 +1,6 @@
 package com.techsavvy.showcaseme.data.models.api_response
 
-import com.techsavvy.showcaseme.data.models.UserModel
+import com.techsavvy.showcaseme.data.models.AuthUser
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -9,5 +9,5 @@ data class LoginResponse(
     @SerialName("token")
     val token: String? = null,
     @SerialName("user")
-    val user: UserModel? = null
+    val user: AuthUser? = null,
 )

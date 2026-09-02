@@ -30,6 +30,7 @@ fun TopBar(navController: NavController) {
         return when(currentRoute.value?.destination?.route.toString()){
             Screens.Login.route -> Screens.Login
             Screens.Register.route -> Screens.Register
+            Screens.ForgotPassword.route -> Screens.ForgotPassword
             Screens.Home.route -> Screens.Home
             Screens.QRScreen.route -> Screens.QRScreen
             Screens.QRShare.route -> Screens.QRShare
@@ -39,8 +40,18 @@ fun TopBar(navController: NavController) {
         }
     }
 
+    // Splash and the auth flow draw their own headers, so the app bar is
+    // suppressed there — showing it too gave the login screen two titles.
+    val chromeLessRoutes = setOf(
+        Screens.Splash.route,
+        Screens.Login.route,
+        Screens.Register.route,
+        Screens.ForgotPassword.route,
+        Screens.Home.route,
+    )
+
     Column(modifier = Modifier.fillMaxWidth()){
-        if(navController.currentBackStackEntryAsState().value?.destination?.route != Screens.Home.route && navController.currentBackStackEntryAsState().value?.destination?.route != Screens.Splash.route) {
+        if(currentRoute.value?.destination?.route !in chromeLessRoutes) {
             AnimatedVisibility(getRoute() != Screens.Home) {
                 TopAppBar(
                     navigationIcon = {

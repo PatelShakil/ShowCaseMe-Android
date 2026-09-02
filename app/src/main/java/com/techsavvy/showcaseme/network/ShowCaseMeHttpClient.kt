@@ -17,49 +17,49 @@ import javax.inject.Inject
 
 class ShowCaseMeHttpClient @Inject constructor() {
 
-fun getHttpClient() = HttpClient(Android) {
-
-    install(ContentNegotiation) {
-        json(Json {
-            prettyPrint = true
-            isLenient = true
-            ignoreUnknownKeys = true
-        },
-            contentType = ContentType.Application.Json
-        )
+    fun getHttpClient() = HttpClient(Android) {
 
         engine {
             connectTimeout = TIME_OUT
             socketTimeout = TIME_OUT
         }
 
-    }
+        install(ContentNegotiation) {
+            json(
+                Json {
+                    prettyPrint = true
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                },
+                contentType = ContentType.Application.Json
+            )
+        }
 
+        install(Logging) {
+            logger = object : Logger {
+                override fun log(message: String) {
+                    Log.v(TAG_KTOR_LOGGER, message)
+                }
+            }
+            level = LogLevel.ALL
+        }
 
-    install(Logging) {
-        logger = object : Logger {
-            override fun log(message: String) {
-                Log.v(TAG_KTOR_LOGGER, message)
+        install(ResponseObserver) {
+            onResponse { response ->
+                Log.d(TAG_HTTP_STATUS_LOGGER, "${response.status.value}")
             }
         }
-        level = LogLevel.ALL
-    }
 
-    install(ResponseObserver) {
-        onResponse { response ->
-            Log.d(TAG_HTTP_STATUS_LOGGER, "${response.status.value}")
+        install(DefaultRequest) {
+            // Laravel only renders JSON validation errors when the request asks
+            // for JSON — without this a 422 comes back as a redirect.
+            header(HttpHeaders.Accept, ContentType.Application.Json)
         }
     }
 
-    install(DefaultRequest) {
-        header("Content-Type", "application/json")
-//        header("uid",auth.uid.toString())
+    companion object {
+        private const val TIME_OUT = 30_000
+        private const val TAG_KTOR_LOGGER = "ktor_logger:"
+        private const val TAG_HTTP_STATUS_LOGGER = "http_status:"
     }
-}
-
-companion object {
-    private const val TIME_OUT = 30_000
-    private const val TAG_KTOR_LOGGER = "ktor_logger:"
-    private const val TAG_HTTP_STATUS_LOGGER = "http_status:"
-}
 }

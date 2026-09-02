@@ -39,3 +39,26 @@ fun drawableToFile(context: Context, drawable: Drawable, fileName: String = "tem
     return file
 }
 
+
+// ── Validators mirroring the Laravel rules in AuthController ──────────────
+// register(): name max 100 | email max 150 | phone max 20 | password 6..100
+//             state/city max 100 | pincode max 10
+
+fun isValidEmail(input: String): Boolean =
+    input.isNotBlank() &&
+        input.length <= 150 &&
+        android.util.Patterns.EMAIL_ADDRESS.matcher(input.trim()).matches()
+
+/** Phone is optional on the API; when present it must fit `max:20`. */
+fun isValidPhone(input: String): Boolean {
+    val digits = input.filter { it.isDigit() }
+    return input.length <= 20 && digits.length in 7..15
+}
+
+fun isValidPassword(input: String): Boolean = input.length in 6..100
+
+fun isValidPincode(input: String): Boolean =
+    input.isEmpty() || (input.length <= 10 && input.all { it.isDigit() })
+
+/** Blank optional fields must go to the API as null, not "". */
+fun String.orNullIfBlank(): String? = trim().takeIf { it.isNotEmpty() }

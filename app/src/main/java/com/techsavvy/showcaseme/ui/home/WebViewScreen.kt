@@ -16,7 +16,13 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +44,7 @@ import androidx.navigation.NavController
 import com.techsavvy.showcaseme.MainActivity
 import com.techsavvy.showcaseme.common.Resource
 import com.techsavvy.showcaseme.common.URLS
+import com.techsavvy.showcaseme.push.PushNotifications
 import com.techsavvy.showcaseme.ui.nav.Screens
 import com.techsavvy.showcaseme.widgets.PremiumLoadingDialog
 import com.techsavvy.showcaseme.widgets.utils.LocalSmartToast
@@ -71,7 +78,18 @@ fun WebViewScreen(navController: NavController, viewModel: HomeViewModel) {
             }
 
             is Resource.Success -> {
-                val webUrl = URLS.WEB_URL + "jwt-verify/" + it.result
+                val coldStartUrl = mainActivity.pendingNotificationUrl.value
+                val webUrl = buildString {
+                    append(URLS.WEB_URL)
+                    append("jwt-verify/")
+                    append(it.result)
+                    // The handoff page validates this and routes there once the
+                    // token is stored, instead of always landing on /dashboard.
+                    if (!coldStartUrl.isNullOrBlank()) {
+                        append("?next=")
+                        append(Uri.encode(coldStartUrl))
+                    }
+                }
 
                 val webView = remember {
                     WebView(context).apply {
@@ -220,6 +238,42 @@ fun WebViewScreen(navController: NavController, viewModel: HomeViewModel) {
                 LaunchedEffect(Unit) {
                     viewModel.setNav(navController)
                     webView.addJavascriptInterface(viewModel.jsBridge, "Bridge")
+                    // The cold-start target has been folded into webUrl above.
+                    mainActivity.pendingNotificationUrl.value = null
+                }
+
+                // Notification permission is asked for here rather than on the
+                // splash screen: the owner has just signed in, so the request
+                // arrives with some context instead of before they have seen
+                // anything. Registration runs either way, since a refused
+                // prompt still leaves the in-app notification list working.
+                val notificationPermission = rememberLauncherForActivityResult(
+                    ActivityResultContracts.RequestPermission()
+                ) { viewModel.registerForNotifications() }
+
+                LaunchedEffect(Unit) {
+                    val needsPrompt = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                        ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.POST_NOTIFICATIONS,
+                        ) != PackageManager.PERMISSION_GRANTED
+
+                    if (needsPrompt) {
+                        notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        viewModel.registerForNotifications()
+                    }
+                }
+
+                // A notification tapped while the app is already running: the
+                // token is in the page's storage, so navigate straight there
+                // rather than repeating the handoff.
+                LaunchedEffect(Unit) {
+                    mainActivity.pendingNotificationUrl.collect { path ->
+                        if (path.isNullOrBlank()) return@collect
+                        webView.loadUrl(URLS.WEB_URL + path.trimStart('/'))
+                        mainActivity.pendingNotificationUrl.value = null
+                    }
                 }
                 Box {
                     if (isLoading) {

@@ -2,6 +2,8 @@ package com.techsavvy.showcaseme.di
 
 import android.content.Context
 import com.techsavvy.showcaseme.data.repo.api.auth.AuthImpl
+import com.techsavvy.showcaseme.data.repo.api.device.DeviceImpl
+import com.techsavvy.showcaseme.data.repo.api.device.DeviceRepo
 import com.techsavvy.showcaseme.data.repo.api.auth.AuthRepo
 import com.techsavvy.showcaseme.data.repo.log.FcmLog
 import com.techsavvy.showcaseme.data.repo.log.FcmLogImpl
@@ -28,6 +30,9 @@ object AppModule {
 
     @Provides
     fun provideAuthRepo(authRepo: AuthImpl): AuthRepo = authRepo
+
+    @Provides
+    fun provideDeviceRepo(deviceRepo: DeviceImpl): DeviceRepo = deviceRepo
 
     @Provides
     fun provideFcmLog(): FcmLog = FcmLogImpl()

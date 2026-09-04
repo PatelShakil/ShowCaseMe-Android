@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.techsavvy.showcaseme.common.Resource
+import com.techsavvy.showcaseme.push.PushRegistrar
 import com.techsavvy.showcaseme.ui.nav.Screens
 import com.techsavvy.showcaseme.utils.Helpers
 import com.techsavvy.showcaseme.utils.js.JSBridge
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     val helper : Helpers,
-    val jsBridge: JSBridge
+    val jsBridge: JSBridge,
+    private val pushRegistrar: PushRegistrar,
 ) : ViewModel() {
 
     private val _loginState = mutableStateOf<Resource<String>?>(null)
@@ -36,8 +38,24 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Sends this install's Firebase token to the API.
+     *
+     * Run on every launch of a signed-in app, not only when Firebase issues a
+     * new token: an existing install that updates never sees onNewToken, and
+     * would otherwise never be registered.
+     */
+    fun registerForNotifications() {
+        viewModelScope.launch(Dispatchers.IO) {
+            pushRegistrar.register()
+        }
+    }
+
     fun setNav(navController: NavController?) {
         jsBridge.onNavigateLogin = {
+            // Stop this handset receiving notifications for the account being
+            // signed out of, before the token it needs to say so is cleared.
+            viewModelScope.launch(Dispatchers.IO) { pushRegistrar.unregister() }
             helper.remove("token")
             viewModelScope.launch(Dispatchers.Main) {
                 navController?.navigate(Screens.Login.route) {

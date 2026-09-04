@@ -15,6 +15,9 @@ object ApiRoutes {
     // Profile
     const val PROFILE = "${BASE_URL}my/profile"
 
+    // Push notification devices
+    const val DEVICES = "${BASE_URL}my/devices"
+
     // The legacy /user/check-user-exists and /user/signup shim is intentionally
     // absent: signup now goes through REGISTER, the only endpoint that persists
     // every field it is sent. The API keeps those routes for older installed APKs.

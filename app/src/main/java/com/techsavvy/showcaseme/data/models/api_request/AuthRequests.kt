@@ -44,3 +44,16 @@ data class ResetPasswordRequest(
     @SerialName("otp") val otp: String,
     @SerialName("password") val password: String,
 )
+
+/**
+ * POST /api/my/devices — registers this install so the API can push to it.
+ *
+ * Sent on every launch once signed in, and again whenever Firebase rotates the
+ * token. The API upserts on the token, so repeating it is harmless.
+ */
+@Serializable
+data class RegisterDeviceRequest(
+    @SerialName("token") val token: String,
+    @SerialName("platform") val platform: String = "android",
+    @SerialName("device_label") val deviceLabel: String? = null,
+)

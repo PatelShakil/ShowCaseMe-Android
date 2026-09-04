@@ -54,6 +54,14 @@ class ShowCaseMeHttpClient @Inject constructor() {
             // Laravel only renders JSON validation errors when the request asks
             // for JSON — without this a 422 comes back as a redirect.
             header(HttpHeaders.Accept, ContentType.Application.Json)
+
+            // ContentNegotiation picks its converter from the request's own
+            // content type. With none set it cannot serialise setBody(...) and
+            // every call carrying a body failed before it left the device with
+            // "Fail to prepare request body for sending ... Content-Type: null".
+            // Declaring it here covers every request rather than relying on each
+            // call site to remember.
+            contentType(ContentType.Application.Json)
         }
     }
 

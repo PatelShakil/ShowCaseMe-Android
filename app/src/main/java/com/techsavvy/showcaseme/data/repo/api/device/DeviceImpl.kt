@@ -4,6 +4,7 @@ import com.techsavvy.showcaseme.common.ApiError
 import com.techsavvy.showcaseme.common.Resource
 import com.techsavvy.showcaseme.common.Response
 import com.techsavvy.showcaseme.data.models.api_request.RegisterDeviceRequest
+import com.techsavvy.showcaseme.data.models.api_request.UnregisterDeviceRequest
 import com.techsavvy.showcaseme.data.repo.log.FcmLog
 import com.techsavvy.showcaseme.network.ApiRoutes
 import io.ktor.client.HttpClient
@@ -41,7 +42,7 @@ class DeviceImpl @Inject constructor(
         client.delete {
             url(ApiRoutes.DEVICES)
             header("Authorization", "Bearer $authToken")
-            setBody(mapOf("token" to fcmToken))
+            setBody(UnregisterDeviceRequest(token = fcmToken))
         }
     }
 

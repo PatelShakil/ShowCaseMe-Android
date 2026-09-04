@@ -57,3 +57,9 @@ data class RegisterDeviceRequest(
     @SerialName("platform") val platform: String = "android",
     @SerialName("device_label") val deviceLabel: String? = null,
 )
+
+/** DELETE /api/my/devices — stops notifications for one install. */
+@Serializable
+data class UnregisterDeviceRequest(
+    @SerialName("token") val token: String,
+)

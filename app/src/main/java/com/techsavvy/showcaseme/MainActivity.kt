@@ -8,6 +8,7 @@ import android.util.Log
 import android.webkit.ValueCallback
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -54,6 +55,10 @@ class MainActivity : ComponentActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // From Android 15 the system draws edge to edge whether an app asks or
+        // not, so the insets are declared here and every screen pads for them.
+        // Without this the content sits under the status bar.
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         inAppUpdateManager = InAppUpdateManager(this)
         inAppUpdateManager.checkForAppUpdate(updateActivityResultLauncher)

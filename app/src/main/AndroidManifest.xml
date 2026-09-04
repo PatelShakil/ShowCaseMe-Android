@@ -60,6 +60,7 @@
             android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.ShowCaseMe">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

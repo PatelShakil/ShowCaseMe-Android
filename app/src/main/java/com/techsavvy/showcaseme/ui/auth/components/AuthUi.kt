@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -88,7 +90,11 @@ fun AuthScaffold(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .imePadding()
+                // Pads for the status bar, the navigation bar and the keyboard
+                // together. The app is edge to edge from Android 15 onward, so
+                // without this the title sits under the status bar and the
+                // keyboard covers the last field.
+                .safeDrawingPadding()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -120,7 +126,9 @@ fun AuthScaffold(
             Spacer(Modifier.height(24.dp))
 
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .widthIn(max = 460.dp),
                 shape = RoundedCornerShape(24.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                 colors = CardDefaults.cardColors(containerColor = scheme.surface)
@@ -148,7 +156,7 @@ fun AuthScaffold(
 
             if (footer != null) {
                 Spacer(Modifier.height(20.dp))
-                footer()
+                Box(modifier = Modifier.widthIn(max = 460.dp)) { footer() }
             }
 
             Spacer(Modifier.height(24.dp))
